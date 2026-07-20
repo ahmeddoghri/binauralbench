@@ -1,6 +1,6 @@
 {
   "target_ild_db": 8.2,
   "naive_ild_db": 0.0,
-  "linked_ild_db": 8.06,
-  "ild_error_reduction_pct": 98.3
+  "linked_ild_db": 8.22,
+  "ild_error_reduction_pct": 99.8
 }
