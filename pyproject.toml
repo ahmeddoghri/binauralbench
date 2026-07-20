@@ -1,0 +1,13 @@
+[project]
+name = "binauralbench"
+version = "0.1.0"
+description = "A spatial-audio separation benchmark that checks whether the instrument stayed where you put it."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Ahmed Doghri"}]
+keywords = ["machine-learning", "research", "sound-music", "benchmark"]
+
+[project.urls]
+Homepage = "https://adoghri.com"
+Repository = "https://github.com/ahmeddoghri/binauralbench"
