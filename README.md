@@ -43,6 +43,35 @@ The test compares linked-channel gain preservation against the naive shared-gain
 
 This is an educational research reproduction on a single controlled synthetic tone plus one interferer, not a real multi-instrument binaural mix. It is not a clinical, diagnostic, production audio-production, or safety-critical system. The point is to make one mechanism — collapsing independently-estimated channel gains into a shared value destroys spatial cues that keeping them separate preserves — measurable and audible without hiding it behind a checkpoint.
 
+## Does the linked-gain advantage survive other pans and noise levels?
+
+Worth flagging up front: `naive_ild_db: 0.0` isn't a variable measurement.
+`naive_L` and `naive_R` are both computed as `avg_gain * target` — the
+literal same array — so `ild(naive_L, naive_R)` is mathematically
+guaranteed to equal exactly `0.0` for any seed, pan, or noise level. That's
+not a hidden rigged baseline; the README already explains the mechanism
+(collapsing both channels to one shared gain destroys any left/right
+difference by construction). But it does mean the naive number itself
+isn't worth stress-testing — the *linked method's* error-reduction claim
+is.
+
+```bash
+python eval_v2.py
+```
+```
+tuning (40 seeds):  naive_ild_always_exactly_zero=true  mean_reduction_pct=98.0  min_reduction_pct=85.6
+holdout (30 seeds): naive_ild_always_exactly_zero=true  mean_reduction_pct=98.4  min_reduction_pct=95.0
+```
+
+`adversarial.py` randomizes target/interferer frequency, both channel
+gains, and noise level per seed (rejecting near-centered pans below 2 dB,
+where relative-error metrics are inherently noisy for any method). Across
+40 tuning seeds and a disjoint 30-seed holdout (evaluated once), the naive
+method's ILD is confirmed exactly `0.0` on every single seed as expected,
+and the linked method holds a mean 98.0%/98.4% error reduction, never
+dropping below 85.6%. The core mechanism generalizes well past the one
+published configuration. `binauralbench.py` is unmodified.
+
 ## Research basis
 
 - [The 2025 study of spatial-information loss in binaural music source separation](https://arxiv.org/abs/2507.00155)
