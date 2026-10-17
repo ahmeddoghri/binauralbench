@@ -1,5 +1,9 @@
 # binauralbench
 
+[![tests](https://github.com/ahmeddoghri/binauralbench/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmeddoghri/binauralbench/actions/workflows/tests.yml) [![case study](https://img.shields.io/badge/case%20study-adoghri.com-e0703e)](https://adoghri.com/project-42.html)
+
+![binauralbench](docs/cover.jpg)
+
 **A spatial-audio separation benchmark that checks whether the instrument stayed where you put it.**
 
 Separate a stereo mix into stems and most benchmarks stop at "does the isolated instrument sound clean." Nobody asks the second question: does it still sound like it's coming from where it actually was? A naive separator that estimates each channel's gain independently and then normalizes both to a shared output level sounds fine in headphones right up until you notice the guitar that used to be panned hard left is now dead center. binauralbench measures that specific failure — interaural level difference, the loudness gap between your two ears that your brain uses to localize sound — before and after separation.
