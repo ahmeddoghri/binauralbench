@@ -76,6 +76,42 @@ and the linked method holds a mean 98.0%/98.4% error reduction, never
 dropping below 85.6%. The core mechanism generalizes well past the one
 published configuration. `binauralbench.py` is unmodified.
 
+## Both methods were handed the clean target
+
+Reading `binauralbench.py` closely: each ear's gain comes from
+`estimate_gain(mix, target)`, a least-squares projection of the mixture onto
+the **clean target waveform**, and both outputs are rendered as
+`gain * target`. Neither method separates anything. The benchmark measures
+how well least squares recovers a gain when you already know the source, so
+the 99.8% is a property of an oracle reference, and the naive baseline's
+0.00 dB is guaranteed because both of its channels are the same array. The
+earlier note above called this "not a hidden oracle read"; it is one.
+
+`binauralbench_v2.py` only gets the two-channel mixture. It finds the two
+source frequencies from the mixture's own power spectrum, places a crossover
+between them, builds one STFT mask, and renders the target the three ways
+real pipelines do: **mono** (separate the mid channel, play it in both ears),
+**per_ear** (mask each ear, then normalize each to a common level), and
+**linked** (the same mask on each ear's own spectrum, channel energies kept).
+
+```bash
+python binauralbench_v2.py   # the published scene, no oracle
+python eval_v3.py            # 40 tuning, 30 holdout, 30 hard scenes
+```
+
+| split | mono ILD error | per-ear ILD error | linked ILD error | linked SDR |
+| --- | ---: | ---: | ---: | ---: |
+| published scene | 8.20 dB | 8.20 dB | **0.01 dB** | 32.2 dB |
+| tuning (40) | 8.20 dB | 8.20 dB | **1.24 dB** (max 10.1) | 11.7 dB |
+| holdout (30) | 8.05 dB | 8.05 dB | **1.51 dB** (max 6.7) | 10.2 dB |
+| hard (30) | 8.96 dB | 8.96 dB | **1.53 dB** (max 5.8) | 10.2 dB |
+
+The hard split puts the sources closer in frequency (380-470 Hz vs 560-680 Hz)
+with a louder interferer, so the mask leaks. Without the oracle, the linked
+mask removes about **81-85% of the spatial error** that collapsing to mono
+or normalizing each ear causes, not 99.8%. Smaller, and it is the number
+that describes a separator rather than a lookup.
+
 ## Research basis
 
 - [The 2025 study of spatial-information loss in binaural music source separation](https://arxiv.org/abs/2507.00155)
